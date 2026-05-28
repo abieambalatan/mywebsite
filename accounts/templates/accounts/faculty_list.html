@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty{% endblock %}
+
+{% block content %}
+<div class="topbar">
+    <h1>Faculty</h1>
+    <a class="btn" href="{% url 'add_faculty' %}">Add Faculty</a>
+</div>
+
+<nav class="department-nav">
+    <a href="{% url 'faculty_list' %}?department=all" class="{% if show_all_departments %}active{% endif %}">All</a>
+    {% for value, label in departments %}
+        <a href="{% url 'faculty_list' %}?department={{ value }}" class="{% if selected_department == value %}active{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+</nav>
+
+<div class="panel">
+    <table class="mobile-table">
+        <tr>
+            <th>ID Number</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Subject</th>
+            <th>Actions</th>
+        </tr>
+        {% for f in faculty %}
+            <tr>
+                <td data-label="ID Number">{{ f.faculty_id|default:f.id }}</td>
+                <td data-label="Name">{{ f.name }}</td>
+                <td data-label="Department">{{ f.department }}</td>
+                <td data-label="Subject">{{ f.subject|default:"-" }}</td>
+                <td data-label="Actions">
+                    <div class="actions">
+                        <a class="btn secondary" href="{% url 'edit_faculty' f.pk %}">Edit</a>
+                        <a class="btn danger" href="{% url 'delete_faculty' f.pk %}">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="empty">No faculty records yet.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}
+<div class="topbar">
+    <h1>Evaluation Results</h1>
+    <div class="actions no-print">
+        <button class="btn secondary" type="button" onclick="window.print()">Print Results</button>
+        <a class="btn" href="{% url 'evaluation' %}">New Evaluation</a>
+    </div>
+</div>
+
+<nav class="department-nav">
+    <a href="{% url 'results' %}?department=all" class="{% if show_all_departments %}active{% endif %}">All</a>
+    {% for value, label in departments %}
+        <a href="{% url 'results' %}?department={{ value }}" class="{% if selected_department == value %}active{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+</nav>
+
+<div class="panel">
+    <h2>Faculty Summary</h2>
+    <table class="mobile-table">
+        <tr>
+            <th>ID Number</th>
+            <th>Faculty</th>
+            <th>Department</th>
+            <th>Responses</th>
+            <th>Overall</th>
+            <th>Badge</th>
+            <th>Knowledge</th>
+            <th>Teaching</th>
+            <th>Communication</th>
+            <th>Punctuality</th>
+            <th>Fairness</th>
+        </tr>
+        {% for faculty in faculty_results %}
+            <tr>
+                <td data-label="ID Number">{{ faculty.faculty_id|default:faculty.id }}</td>
+                <td data-label="Faculty">{{ faculty.name }}</td>
+                <td data-label="Department">{{ faculty.department }}</td>
+                <td data-label="Responses">{{ faculty.evaluation_count }}</td>
+                <td data-label="Overall">{{ faculty.overall_average|floatformat:2|default:"-" }}</td>
+                <td data-label="Badge">
+                    {% if faculty.achievement_badge %}
+                        <span class="badge {{ faculty.achievement_badge.class }}">{{ faculty.achievement_badge.title }}</span>
+                    {% else %}
+                        <span class="empty">No badge</span>
+                    {% endif %}
+                </td>
+                <td data-label="Knowledge">{{ faculty.avg_subject_knowledge|floatformat:2|default:"-" }}</td>
+                <td data-label="Teaching">{{ faculty.avg_teaching|floatformat:2|default:"-" }}</td>
+                <td data-label="Communication">{{ faculty.avg_communication|floatformat:2|default:"-" }}</td>
+                <td data-label="Punctuality">{{ faculty.avg_punctuality|floatformat:2|default:"-" }}</td>
+                <td data-label="Fairness">{{ faculty.avg_fairness|floatformat:2|default:"-" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="11" class="empty">No faculty records yet.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Recent Comments</h2>
+    <table class="mobile-table">
+        <tr>
+            <th>Faculty</th>
+            <th>Student</th>
+            <th>Average</th>
+            <th>Comment</th>
+        </tr>
+        {% for evaluation in evaluations %}
+            <tr>
+                <td data-label="Faculty">{{ evaluation.faculty.name }}</td>
+                <td data-label="Student">{{ evaluation.student_name }}</td>
+                <td data-label="Average">{{ evaluation.average_rating|floatformat:2 }}</td>
+                <td data-label="Comment">{{ evaluation.comment|default:"-" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4" class="empty">No evaluations yet.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

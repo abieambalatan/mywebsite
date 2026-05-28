@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Faculty Evaluation System</title>
+
+<style>
+    * { 
+        box-sizing: border-box; 
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background: #f6f7fb;
+        color: #172033;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        padding: 18px;
+    }
+
+    .home {
+        width: 100%;
+        max-width: 1200px;
+        text-align: center;
+    }
+
+    .hero {
+        margin-bottom: 25px;
+    }
+
+    h1 {
+        margin: 0 0 10px;
+        font-size: clamp(30px, 7vw, 54px);
+    }
+
+    p {
+        margin: 0 auto;
+        color: #526071;
+        font-size: 17px;
+        line-height: 1.5;
+        max-width: 700px;
+    }
+
+    .links {
+        display: flex;
+        justify-content: center; /* center align */
+        align-items: center;
+        gap: 1in; /* 1 inch pagitan */
+
+        flex-wrap: wrap;
+        margin-top: 40px;
+    }
+
+    .card {
+        width: 250px;
+        min-height: 170px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        background: white;
+        border: 1px solid #e1e6ef;
+        border-radius: 8px;
+        padding: 20px;
+
+        color: #172033;
+        text-decoration: none;
+        text-align: center;
+
+        transition: 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: #2563eb;
+        transform: translateY(-3px);
+    }
+
+    .card strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 22px;
+    }
+
+    .card span {
+        color: #526071;
+        line-height: 1.45;
+    }
+
+    .primary {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+
+    .primary span {
+        color: #dbeafe;
+    }
+
+    @media (max-width: 720px) {
+        .links {
+            gap: 25px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 320px;
+            min-height: 120px;
+        }
+    }
+</style>
+</head>
+<body>
+    <main class="home">
+        <section class="hero">
+            <h1>Faculty Evaluation System</h1>
+            <p>Home page para sa students, at faculty, . Piliin ang portal na kailangan mo.</p>
+        </section>
+
+        <section class="links">
+            <a class="card primary" href="{% url 'faculty_login' %}">
+                <strong>Faculty Portal</strong>
+                <span>Enter faculty ID number para makita ang ratings, comments, at achievement badge.</span>
+            </a>
+            <a class="card" href="{% url 'login' %}">
+                <strong>Student Login</strong>
+                <span>Login gamit ang student ID para makapag-submit ng faculty evaluation.</span>
+            </a>
+           
+        </section>
+    </main>
+</body>
+</html>

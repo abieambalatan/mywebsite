@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluation Form{% endblock %}
+
+{% block content %}
+<div class="topbar">
+    <h1>Evaluation Form</h1>
+</div>
+
+<div class="panel">
+    <strong>Department</strong>
+    <div class="actions" style="margin-top: 12px;">
+        {% for value, label in departments %}
+            {% if value == selected_department %}
+                <span class="btn">{{ label }}</span>
+            {% else %}
+                <a class="btn secondary" href="{% url 'evaluation' %}?department={{ value }}">{{ label }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<form class="panel" method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="field">
+        <label for="{{ form.faculty.id_for_label }}">Faculty</label>
+        {{ form.faculty }}
+        {{ form.faculty.errors }}
+    </div>
+    <div class="field">
+        <label for="{{ form.student_name.id_for_label }}">{{ form.student_name.label }}</label>
+        {{ form.student_name }}
+        {{ form.student_name.errors }}
+    </div>
+
+    <div class="field rating">
+        <label>Subject Knowledge</label>
+        <div class="rating-options">
+            {% for choice in form.subject_knowledge %}
+                <label class="rating-option">
+                    <span class="rating-number">{{ choice.choice_label }}</span>
+                    {{ choice.tag }}
+                </label>
+            {% endfor %}
+        </div>
+        {{ form.subject_knowledge.errors }}
+    </div>
+    <div class="field rating">
+        <label>Teaching Effectiveness</label>
+        <div class="rating-options">
+            {% for choice in form.teaching %}
+                <label class="rating-option">
+                    <span class="rating-number">{{ choice.choice_label }}</span>
+                    {{ choice.tag }}
+                </label>
+            {% endfor %}
+        </div>
+        {{ form.teaching.errors }}
+    </div>
+    <div class="field rating">
+        <label>Communication</label>
+        <div class="rating-options">
+            {% for choice in form.communication %}
+                <label class="rating-option">
+                    <span class="rating-number">{{ choice.choice_label }}</span>
+                    {{ choice.tag }}
+                </label>
+            {% endfor %}
+        </div>
+        {{ form.communication.errors }}
+    </div>
+    <div class="field rating">
+        <label>Punctuality</label>
+        <div class="rating-options">
+            {% for choice in form.punctuality %}
+                <label class="rating-option">
+                    <span class="rating-number">{{ choice.choice_label }}</span>
+                    {{ choice.tag }}
+                </label>
+            {% endfor %}
+        </div>
+        {{ form.punctuality.errors }}
+    </div>
+    <div class="field rating">
+        <label>Fairness</label>
+        <div class="rating-options">
+            {% for choice in form.fairness %}
+                <label class="rating-option">
+                    <span class="rating-number">{{ choice.choice_label }}</span>
+                    {{ choice.tag }}
+                </label>
+            {% endfor %}
+        </div>
+        {{ form.fairness.errors }}
+    </div>
+    <div class="field">
+        <label for="{{ form.comment.id_for_label }}">Comment</label>
+        {{ form.comment }}
+        {{ form.comment.errors }}
+    </div>
+
+    <button class="btn" type="submit">Submit Evaluation</button>
+</form>
+{% endblock %}

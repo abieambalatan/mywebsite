@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(120deg, rgba(15, 23, 42, 0.86), rgba(30, 64, 175, 0.58)),
+                url("{% static 'accounts/faculty-dashboard-bg.svg' %}") center / cover fixed;
+            color: #172033;
+            min-height: 100vh;
+        }
+        .page {
+            width: min(100%, 1100px);
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 22px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.22);
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+        .avatar {
+            width: 66px;
+            height: 66px;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            flex: 0 0 auto;
+        }
+        .eyebrow {
+            display: block;
+            margin-bottom: 6px;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .meta span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            border: 1px solid #dbe3ee;
+            border-radius: 999px;
+            background: #f8fafc;
+            color: #334155;
+            padding: 5px 9px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        h1 {
+            font-size: 34px;
+            line-height: 1.1;
+        }
+        .muted {
+            color: #526071;
+            line-height: 1.5;
+        }
+        .panel {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(226, 232, 240, 0.86);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+            backdrop-filter: blur(8px);
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 18px;
+        }
+        .split-grid {
+            display: grid;
+            grid-template-columns: minmax(290px, 0.8fr) minmax(0, 1.2fr);
+            gap: 18px;
+            align-items: start;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .stat {
+            border: 1px solid #e1e6ef;
+            border-radius: 8px;
+            padding: 16px;
+            background: #f8fafc;
+            min-height: 112px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #526071;
+            font-weight: 700;
+        }
+        .stat strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 28px;
+            line-height: 1.1;
+            color: #0f172a;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-weight: 700;
+        }
+        .badge.gold { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        .badge.silver { background: #f1f5f9; color: #334155; border: 1px solid #94a3b8; }
+        .badge.bronze { background: #ffedd5; color: #9a3412; border: 1px solid #fb923c; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e1e6ef;
+            text-align: left;
+        }
+        th {
+            color: #526071;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .btn {
+            display: inline-block;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            padding: 10px 14px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .btn.secondary {
+            background: #64748b;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        @media (max-width: 720px) {
+            .page {
+                padding: 16px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px;
+            }
+            .profile {
+                align-items: flex-start;
+            }
+            .avatar {
+                width: 54px;
+                height: 54px;
+                font-size: 23px;
+            }
+            h1 { font-size: 28px; }
+            .split-grid { grid-template-columns: 1fr; }
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            table, tbody, tr, td {
+                display: block;
+                width: 100%;
+            }
+            tr {
+                border: 1px solid #e1e6ef;
+                border-radius: 8px;
+                padding: 10px;
+                margin-bottom: 12px;
+                background: white;
+            }
+            th {
+                display: none;
+            }
+            td {
+                border-bottom: 0;
+                padding: 8px 0;
+            }
+            td::before {
+                content: attr(data-label);
+                display: block;
+                margin-bottom: 3px;
+                color: #526071;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .btn {
+                text-align: center;
+                flex: 1 1 140px;
+            }
+        }
+        @media (max-width: 460px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <div class="topbar">
+            <div class="profile">
+                <div class="avatar">{{ faculty.name|first|upper }}</div>
+                <div>
+                    <span class="eyebrow">Faculty Dashboard</span>
+                    <h1>{{ faculty.name }}</h1>
+                    <div class="meta">
+                        <span>ID: {{ faculty.faculty_id|default:faculty.id }}</span>
+                        <span>{{ faculty.get_department_display }}</span>
+                        <span>{{ faculty.subject|default:"No subject set" }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                
+                <a class="btn secondary" href="{% url 'faculty_logout' %}">Logout</a>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <section class="panel">
+                <h2>My Rating Dashboard</h2>
+                <p class="muted" style="margin: 6px 0 0;">Summary ng ratings at recognition badge based sa submitted student evaluations.</p>
+                <div class="stats" style="margin-top: 14px;">
+                    <div class="stat">
+                        Overall Rating
+                        <strong>{{ faculty.overall_average|floatformat:2|default:"-" }}</strong>
+                    </div>
+                    <div class="stat">
+                        Responses
+                        <strong>{{ faculty.evaluation_count }}</strong>
+                    </div>
+                    <div class="stat">
+                        Teaching
+                        <strong>{{ faculty.avg_teaching|floatformat:2|default:"-" }}</strong>
+                    </div>
+                    <div class="stat">
+                        Achievement
+                        <strong>
+                            {% if faculty.achievement_badge %}
+                                <span class="badge {{ faculty.achievement_badge.class }}">{{ faculty.achievement_badge.title }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+            </section>
+
+            <div class="split-grid">
+                <section class="panel">
+                    <h2>Category Ratings</h2>
+                    <table style="margin-top: 14px;">
+                        <tr>
+                            <th>Category</th>
+                            <th>Rating</th>
+                        </tr>
+                        <tr>
+                            <td data-label="Category">Subject Knowledge</td>
+                            <td data-label="Rating">{{ faculty.avg_subject_knowledge|floatformat:2|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Category">Teaching</td>
+                            <td data-label="Rating">{{ faculty.avg_teaching|floatformat:2|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Category">Communication</td>
+                            <td data-label="Rating">{{ faculty.avg_communication|floatformat:2|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Category">Punctuality</td>
+                            <td data-label="Rating">{{ faculty.avg_punctuality|floatformat:2|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Category">Fairness</td>
+                            <td data-label="Rating">{{ faculty.avg_fairness|floatformat:2|default:"-" }}</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section class="panel">
+                    <h2>Recent Feedback</h2>
+                    <table style="margin-top: 14px;">
+                        <tr>
+                            <th>Average</th>
+                            <th>Comment</th>
+                            <th>Date</th>
+                        </tr>
+                        {% for evaluation in evaluations %}
+                            <tr>
+                                <td data-label="Average">{{ evaluation.average_rating|floatformat:2 }}</td>
+                                <td data-label="Comment">{{ evaluation.comment|default:"-" }}</td>
+                                <td data-label="Date">{{ evaluation.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="3" class="muted">No evaluations yet.</td></tr>
+                        {% endfor %}
+                    </table>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

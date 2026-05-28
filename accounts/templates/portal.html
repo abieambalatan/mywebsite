@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}My Portal{% endblock %}
+
+{% block content %}
+<div class="topbar">
+    <div>
+        <h1>My Evaluation Portal</h1>
+        <p class="empty">Student ID: {{ request.user.username }} | Department: {{ profile.get_department_display }}</p>
+    </div>
+    <div class="actions">
+        <a class="btn" href="{% url 'evaluation' %}">Submit Evaluation</a>
+    </div>
+</div>
+
+<div class="panel portal-hero">
+    <div>
+        <h2>Personal Summary</h2>
+        <p class="empty">Makikita dito ang iyong submitted evaluations at faculty feedback summary sa department mo.</p>
+    </div>
+    <div class="quick-stats">
+        <div class="quick-stat">
+            Evaluations
+            <strong>{{ evaluation_count }}</strong>
+        </div>
+        <div class="quick-stat">
+            Your Avg Rating
+            <strong>{{ overall_average|floatformat:2|default:"-" }}</strong>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Achievement Badges</h2>
+    <table class="mobile-table">
+        <tr>
+            <th>Faculty</th>
+            <th>Subject</th>
+            <th>Responses</th>
+            <th>Overall</th>
+            <th>Badge</th>
+        </tr>
+        {% for faculty in faculty_results %}
+            <tr>
+                <td data-label="Faculty">{{ faculty.name }}</td>
+                <td data-label="Subject">{{ faculty.subject|default:"-" }}</td>
+                <td data-label="Responses">{{ faculty.evaluation_count }}</td>
+                <td data-label="Overall">{{ faculty.overall_average|floatformat:2|default:"-" }}</td>
+                <td data-label="Badge">
+                    {% if faculty.achievement_badge %}
+                        <span class="badge {{ faculty.achievement_badge.class }}">{{ faculty.achievement_badge.title }}</span>
+                    {% else %}
+                        <span class="empty">No badge yet</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="empty">No faculty records yet for your department.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="panel">
+    <h2>My Submitted Evaluations</h2>
+    <table class="mobile-table">
+        <tr>
+            <th>Faculty</th>
+            <th>Subject</th>
+            <th>Average</th>
+            <th>Comment</th>
+            <th>Date</th>
+        </tr>
+        {% for evaluation in evaluations %}
+            <tr>
+                <td data-label="Faculty">{{ evaluation.faculty.name }}</td>
+                <td data-label="Subject">{{ evaluation.faculty.subject|default:"-" }}</td>
+                <td data-label="Average">{{ evaluation.average_rating|floatformat:2 }}</td>
+                <td data-label="Comment">{{ evaluation.comment|default:"-" }}</td>
+                <td data-label="Date">{{ evaluation.created_at|date:"M d, Y" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="empty">Wala ka pang submitted evaluation.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

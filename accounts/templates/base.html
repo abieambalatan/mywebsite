@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Faculty Evaluation System{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f6f7fb;
+            color: #172033;
+        }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 230px;
+            background: #172033;
+            color: white;
+            padding: 24px 18px;
+            flex: 0 0 230px;
+        }
+        .brand {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 26px;
+        }
+        .sidebar a {
+            display: block;
+            color: #dbe4f0;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+        .sidebar a:hover { background: #26354f; color: white; }
+        .sidebar a.active {
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+        }
+        .content { flex: 1; padding: 28px; }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        h1 { margin: 0; font-size: 28px; }
+        .panel {
+            background: white;
+            border: 1px solid #e1e6ef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+        .department-panel {
+            padding: 0;
+            margin-top: 28px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .department-panel + .department-panel {
+            margin-top: 34px;
+        }
+        .department-body {
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+        .stat {
+            background: white;
+            border: 1px solid #e1e6ef;
+            border-radius: 8px;
+            padding: 18px;
+        }
+        .stat strong { display: block; font-size: 30px; margin-top: 8px; }
+        .summary-table {
+            table-layout: fixed;
+            margin-bottom: 18px;
+            border: 1px solid #e1e6ef;
+        }
+        .summary-table th,
+        .summary-table td {
+            text-align: center;
+            border-right: 1px solid #e1e6ef;
+        }
+        .summary-table th:last-child,
+        .summary-table td:last-child {
+            border-right: 0;
+        }
+        .summary-table .summary-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #172033;
+            padding-top: 20px;
+            padding-bottom: 6px;
+        }
+        .summary-table .summary-label {
+            color: #526071;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding-top: 6px;
+            padding-bottom: 18px;
+        }
+        .department-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: #2563eb;
+            color: white;
+        }
+        .department-title h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .department-badge {
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .department-panel:nth-of-type(odd) .department-title {
+            background: #0f766e;
+        }
+        .department-panel:nth-of-type(even) .department-title {
+            background: #7c3aed;
+        }
+        .department-panel:nth-of-type(3n) .department-title {
+            background: #b45309;
+        }
+        .department-panel:nth-of-type(4n) .department-title {
+            background: #be123c;
+        }
+        .department-panel:nth-of-type(5n) .department-title {
+            background: #2563eb;
+        }
+        .department-summary {
+            margin-bottom: 14px;
+        }
+        .department-summary .summary-number {
+            font-size: 28px;
+            padding-top: 14px;
+        }
+        .department-summary .summary-label {
+            padding-bottom: 14px;
+        }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; border-bottom: 1px solid #e1e6ef; text-align: left; }
+        th { color: #526071; font-size: 13px; text-transform: uppercase; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccd5e1;
+            border-radius: 6px;
+            font: inherit;
+        }
+        label { display: block; font-weight: 700; margin-bottom: 6px; }
+        .field { margin-bottom: 16px; }
+        .rating ul {
+            display: flex;
+            gap: 14px;
+            list-style: none;
+            margin: 6px 0 0;
+            padding: 0;
+        }
+        .rating label { font-weight: 400; }
+        .rating-options {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(48px, 1fr));
+            gap: 10px;
+            max-width: 420px;
+            margin-top: 8px;
+        }
+        .rating-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 72px;
+            border: 1px solid #ccd5e1;
+            border-radius: 6px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        .rating-option:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .rating-option input {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+        .rating-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #172033;
+        }
+        .btn {
+            display: inline-block;
+            border: 0;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            padding: 10px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+        }
+        .btn.secondary { background: #64748b; }
+        .btn.danger { background: #dc2626; }
+        .actions { display: flex; gap: 8px; align-items: center; }
+        .department-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .department-nav a {
+            display: inline-block;
+            border: 1px solid #ccd5e1;
+            border-radius: 999px;
+            background: white;
+            color: #172033;
+            padding: 8px 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .department-nav a:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+        .department-nav a.active {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: white;
+        }
+        .messages { margin-bottom: 16px; }
+        .message { padding: 10px 12px; border-radius: 6px; background: #dcfce7; color: #166534; }
+        .empty { color: #64748b; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .badge.gold { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+        .badge.silver { background: #f1f5f9; color: #334155; border: 1px solid #94a3b8; }
+        .badge.bronze { background: #ffedd5; color: #9a3412; border: 1px solid #fb923c; }
+        .portal-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 16px;
+            align-items: center;
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .quick-stat {
+            border: 1px solid #e1e6ef;
+            border-radius: 8px;
+            padding: 14px;
+            background: #f8fafc;
+        }
+        .quick-stat strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 26px;
+            color: #172033;
+        }
+        @media (max-width: 720px) {
+            .layout { display: block; }
+            .sidebar {
+                width: 100%;
+                padding: 16px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                align-items: center;
+            }
+            .brand {
+                width: 100%;
+                margin-bottom: 6px;
+                font-size: 18px;
+            }
+            .sidebar a {
+                margin-bottom: 0;
+                padding: 9px 10px;
+                font-size: 14px;
+            }
+            .content { padding: 16px; }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .actions {
+                flex-wrap: wrap;
+                align-items: stretch;
+            }
+            .actions .btn,
+            .actions button {
+                text-align: center;
+                flex: 1 1 140px;
+            }
+            .panel { padding: 16px; }
+            .portal-hero {
+                grid-template-columns: 1fr;
+            }
+            .rating-options {
+                grid-template-columns: repeat(5, minmax(42px, 1fr));
+                gap: 6px;
+            }
+            .rating-option {
+                min-height: 58px;
+                gap: 5px;
+            }
+            table.mobile-table,
+            .mobile-table tbody,
+            .mobile-table tr,
+            .mobile-table td {
+                display: block;
+                width: 100%;
+            }
+            .mobile-table tr {
+                border: 1px solid #e1e6ef;
+                border-radius: 8px;
+                padding: 10px;
+                margin-bottom: 12px;
+                background: white;
+            }
+            .mobile-table th {
+                display: none;
+            }
+            .mobile-table td {
+                border-bottom: 0;
+                padding: 8px 0;
+            }
+            .mobile-table td::before {
+                content: attr(data-label);
+                display: block;
+                margin-bottom: 3px;
+                color: #526071;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .summary-table {
+                table-layout: auto;
+            }
+            .summary-table .summary-number {
+                font-size: 24px;
+            }
+        }
+        @media print {
+            body {
+                background: white;
+                color: #000;
+            }
+            .layout {
+                display: block;
+                min-height: 0;
+            }
+            .sidebar,
+            .department-nav,
+            .messages,
+            .no-print {
+                display: none !important;
+            }
+            .content {
+                padding: 0;
+            }
+            .topbar {
+                display: block;
+                margin-bottom: 14px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .panel {
+                border: 0;
+                border-radius: 0;
+                padding: 0;
+                margin-bottom: 20px;
+                page-break-inside: avoid;
+            }
+            table {
+                font-size: 12px;
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            th,
+            td {
+                border: 1px solid #999;
+                padding: 7px;
+            }
+            th {
+                color: #000;
+                background: #f1f1f1;
+            }
+            a {
+                color: #000;
+                text-decoration: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">Faculty Evaluation</div>
+        {% if request.user.is_staff %}
+            <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="{% url 'faculty_list' %}" class="{% if request.resolver_match.url_name == 'faculty_list' or request.resolver_match.url_name == 'add_faculty' or request.resolver_match.url_name == 'edit_faculty' or request.resolver_match.url_name == 'delete_faculty' %}active{% endif %}">Faculty</a>
+            <a href="{% url 'results' %}" class="{% if request.resolver_match.url_name == 'results' %}active{% endif %}">Results</a>
+        {% endif %}
+        <a href="{% url 'evaluation' %}" class="{% if request.resolver_match.url_name == 'evaluation' %}active{% endif %}">Evaluation Form</a>
+       
+        <a href="{% url 'logout' %}">Logout</a>
+    </aside>
+    <main class="content">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>

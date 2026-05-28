@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <style>
+        body{
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+
+        .container{
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: min(100%, 350px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2{
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, select{
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button{
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background-color: #218838;
+        }
+
+        .errorlist{
+            color: red;
+            font-size: 14px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .error{
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .register-link{
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .register-link a{
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .register-link a:hover{
+            text-decoration: underline;
+        }
+
+        @media (max-width: 420px) {
+            .container {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Student Login</h2>
+
+    <!-- Error Message -->
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <!-- Django Form Errors -->
+    {{ form.non_field_errors }}
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <!-- Student ID Number -->
+        <label for="id_username">Student ID Number</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+
+        <!-- Department -->
+        <label for="id_department">Department</label>
+        {{ form.department }}
+        {{ form.department.errors }}
+
+        <button type="submit">Login</button>
+    </form>
+
+    <div class="register-link">
+        <p>
+            Wala ka pang student account?
+            <a href="{% url 'register' %}">Register dito</a>
+        </p>
+        
+        <p>
+            <a href="{% url 'home' %}">Back to home</a>
+        </p>
+       
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="topbar">
+    <div>
+        <h1>Dashboard</h1>
+        <p class="empty">Welcome, {{ request.user.username }}.</p>
+    </div>
+    <div class="actions">
+        <a class="btn" href="{% url 'evaluation' %}">New Evaluation</a>
+        <a class="btn secondary" href="{% url 'add_faculty' %}">Add Faculty</a>
+    </div>
+</div>
+
+<nav class="department-nav">
+    <a href="{% url 'dashboard' %}?department=all" class="{% if show_all_departments %}active{% endif %}">All</a>
+    {% for value, label in departments %}
+        <a href="{% url 'dashboard' %}?department={{ value }}" class="{% if selected_department == value %}active{% endif %}">
+            {{ label }}
+        </a>
+    {% endfor %}
+</nav>
+
+<table class="summary-table">
+    <tr>
+        <td class="summary-number">{{ faculty_count }}</td>
+        <td class="summary-number">{{ student_count }}</td>
+        <td class="summary-number">{{ evaluation_count }}</td>
+    </tr>
+    <tr>
+        <td class="summary-label">Faculty</td>
+        <td class="summary-label">Students</td>
+        <td class="summary-label">Evaluations</td>
+    </tr>
+</table>
+
+{% for department in department_summaries %}
+    <div class="panel department-panel">
+        <div class="department-title">
+            <h2>{{ department.label }}</h2>
+            <span class="department-badge">Department</span>
+        </div>
+
+        <div class="department-body">
+            <table class="summary-table department-summary">
+                <tr>
+                    <td class="summary-number">{{ department.faculty_count }}</td>
+                    <td class="summary-number">{{ department.student_count }}</td>
+                    <td class="summary-number">{{ department.evaluation_count }}</td>
+                </tr>
+                <tr>
+                    <td class="summary-label">Faculty</td>
+                    <td class="summary-label">Students</td>
+                    <td class="summary-label">Evaluations</td>
+                </tr>
+            </table>
+
+            <table class="mobile-table">
+                <tr>
+                    <th>Faculty</th>
+                    <th>Student</th>
+                    <th>Average</th>
+                    <th>Date</th>
+                </tr>
+                {% for evaluation in department.latest_evaluations %}
+                    <tr>
+                        <td data-label="Faculty">{{ evaluation.faculty.name }}</td>
+                        <td data-label="Student">{{ evaluation.student_name }}</td>
+                        <td data-label="Average">{{ evaluation.average_rating|floatformat:2 }}</td>
+                        <td data-label="Date">{{ evaluation.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="empty">No evaluations yet for this department.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
